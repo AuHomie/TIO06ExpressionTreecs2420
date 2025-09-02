@@ -1,6 +1,6 @@
 #include <iostream>
-#ifndef BTREE_H
-#define BTREE_H
+#ifndef EXPRESSIONTREE_H 
+#define EXPRESSIONTREE_H
 
 template <class Type>
 struct Node{
@@ -187,4 +187,4 @@ int BTree<Type>::nodeCount(Node<Type>* curr){
 }; 
 
 
-#endif
+#endif //EXPRESSIONTREE_H
