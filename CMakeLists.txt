@@ -9,8 +9,8 @@ set( APP_EXECUTABLE main )
 
 include_directories( inc )
 
-ADD_EXECUTABLE(main "src/main.cpp")
-#ADD_EXECUTABLE( ${APP_EXECUTABLE} "src/main2.cpp"  "src/main.cpp" "")
+ADD_EXECUTABLE(main "src/ExpressionTreeTest.cpp")
+#ADD_EXECUTABLE( ${APP_EXECUTABLE} "src/main2.cpp"  "src/ExpressionTreeTest.cpp" "")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
