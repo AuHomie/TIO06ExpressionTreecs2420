@@ -186,5 +186,122 @@ int BTree<Type>::nodeCount(Node<Type>* curr){
     return 0;
 }; 
 
+class ExpressionTree {
+public:
+    
+    ExpressionTree() : root(nullptr), pos(0) {}
+    explicit ExpressionTree(const std::string& expr) : root(nullptr), pos(0) { setExpression(expr); }
+    ExpressionTree(const ExpressionTree& other) : root(clone(other.root)), src(), pos(0) {}
+    ExpressionTree& operator=(const ExpressionTree& other) { if (this != &other) { destroy(root); root = clone(other.root); src.clear(); pos = 0; } return *this; }
+    ~ExpressionTree() { destroy(root); }
+    void setExpression(const std::string& expr) { destroy(root); root = nullptr; src = expr; pos = 0; root = parse(); }
+    double getResult() const { return evaluate(root); }
+    void printParseTreeInOrder(std::ostream& os) const { printInOrder(root, os); }
+    void printParseTreePostOrder(std::ostream& os) const { bool first = true; printPostOrder(root, os, first); }
+
+private:
+    struct Node {
+        std::string data;   
+        Node* left;
+        Node* right;
+        explicit Node(const std::string& d) : data(d), left(nullptr), right(nullptr) {}
+    };
+
+    Node* root;
+    std::string src;  
+    int pos;       
+
+    // ---- parsing helpers ----
+    void skipSpaces() {
+        while (pos < src.size() && std::isspace(static_cast<unsigned char>(src[pos]))) 
+        ++pos;
+     }
+
+
+    static bool isOp(char c){ 
+    return c=='+' || c=='-' || c=='*' || c=='/' || c=='^'; 
+        }
+
+
+    
+    Node* parse() {
+        skipSpaces();
+        if (pos >= src.size()) return nullptr;
+
+        if (src[pos] == '(') {
+            ++pos;                          
+            Node* L = parse();               
+            skipSpaces();
+            std::string op;
+            if (pos < src.size() && isOp(src[pos])) op.push_back(src[pos++]);
+            Node* R = parse();              
+            skipSpaces();
+            if (pos < src.size() && src[pos] == ')') ++pos;
+            Node* n = new Node(op);
+            n->left = L; n->right = R;
+            return n;
+        }
+
+        if (std::isdigit(static_cast<unsigned char>(src[pos]))) { 
+            std::string num;
+            while (pos < src.size() && std::isdigit(static_cast<unsigned char>(src[pos]))) num.push_back(src[pos++]);
+            return new Node(num);
+        }
+
+        return nullptr; 
+    }
+
+    
+    static double evaluate(const Node* n) {
+        if (!n) return 0.0;
+        if (!n->left && !n->right) {
+             if (n->data.empty()) {
+             return 0.0;
+              } else {
+                return std::stod(n->data);
+             }
+         }
+        double a = evaluate(n->left), b = evaluate(n->right);
+        if (n->data == "+") return a + b;
+         if (n->data == "-") return a - b;
+        if (n->data == "*") return a * b;
+        if (n->data == "/") return a / b;
+         if (n->data == "^") return std::pow(a, b);
+        return 0.0;
+    }
+
+    
+    static void printInOrder(const Node* n, std::ostream& os) {
+        if (!n) return;
+        printInOrder(n->left, os);
+        os << n->data;
+        printInOrder(n->right, os);
+    }
+
+    static void printPostOrder(const Node* n, std::ostream& os, bool& first) {
+        if (!n) return;
+        printPostOrder(n->left, os, first);
+        printPostOrder(n->right, os, first);
+        if (!n->data.empty()) { if (!first) os << ' ';
+         os << n->data; first = false; }
+    }
+
+    
+    static void destroy(Node* n) {
+         if (!n) return; 
+         destroy(n->left);
+          destroy(n->right); 
+          delete n;
+         }
+
+    static Node* clone(const Node* n) { 
+      if (!n) return nullptr; 
+        Node* c = new Node(n->data);
+         c->left = clone(n->left); 
+         c->right = clone(n->right); 
+         return c; 
+        }
+}; 
+
 
 #endif //EXPRESSIONTREE_H
