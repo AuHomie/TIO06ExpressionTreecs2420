@@ -301,7 +301,13 @@ private:
          c->right = clone(n->right); 
          return c; 
         }
-}; 
+
+    static void getResult(const Node* n, double& result) {
+        result = evaluate(n);
+    }
+
+   
+};
 
 
 #endif //EXPRESSIONTREE_H
